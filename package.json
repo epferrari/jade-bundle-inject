@@ -1,6 +1,6 @@
 {
-	"name": "@epferrari/jade-bundler",
-	"version": "1.0.0",
+	"name": "jade-bundle-inject",
+	"version": "0.0.1",
 	"description": "utility for compiling jade templates from source directory into index.html in destination directory",
 	"main": "index.js",
 	"scripts": {
