@@ -1,6 +1,6 @@
 {
 	"name": "jade-bundle-inject",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "utility for compiling jade templates from source directory into index.html in destination directory",
 	"main": "index.js",
 	"scripts": {
@@ -13,6 +13,7 @@
 		"utility"
 	],
 	"author": "Ethan Ferrari <ethan@ethanferrari.com>",
+	"repository":"https://github.com/epferrari/jade-bundle-inject.git",
 	"license": "MIT",
 	"dependencies": {
 		"app-root-path": "^1.0.0",
