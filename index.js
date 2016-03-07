@@ -10,16 +10,16 @@ var assign = require('object-assign');
 
 Promise.promisifyAll(fs);
 
-const jadeRenderFileAsync = (filename) => {
+const jadeRenderFileAsync = (filename,options) => {
 	return new Promise((resolve,reject) => {
-		let html = jade.renderFile(filename);
+		let html = jade.renderFile(filename,options);
 		resolve(html);
 	});
 };
 
 module.exports = compileJade;
 /**
-* compile all source jade templates and inject them into index.html in destination directory
+* Utitlity to compile all source jade templates and inject them into index.html in destination directory
 * @param {string} src_dir - the source directory to search for jade template files
 * @param {string} dest_dir - the destination directory to save index.html after compiling
 * @param {object} options
@@ -31,9 +31,15 @@ module.exports = compileJade;
 		templates are injected. Filepath should be **relative to `src_dir`**. The
 		file itself should contain a comment `<!-- :jade templates: -->`  to indicate
 		where to inject the template files.
-* @param {boolean} [options.ignoreCommonIndexPaths=true] -
-		ignore `<src_dir>/index.jade` and `<src_dir>/index.html.jade`
-		when searching for template files in `<src_dir>`
+* @param {array} [options.ignorePaths=Array["index.html.jade", "index.jade"]] -
+		ignore these paths when searching for template files in `src_dir`. Paths
+		are relative to `src_dir`
+* @param {boolean} [options.pretty=true] - whether to prettify the jade rendered output
+* @param {object} [options.locals] - data to inject into the templates at compile time
+		keys are the filenames relative to `src_dir`, values are an object of key:value pairs.
+		ex. To inject locals into `<src_dir>/templates/my-template.html.jade', use
+		`locals: {"templates/my-template.html.jade":{greeting: "Hello World"}}` and refer
+		to it in the template as `greeting`
 * @returns {Promise}
 */
 function compileJade(src_dir, dest_dir, options){
@@ -41,41 +47,44 @@ function compileJade(src_dir, dest_dir, options){
 	let defaults = {
 		compileIndex: true,
 		indexSrcPath: 'index.html.jade',
-		ignoreCommonIndexPaths: true
+		ignorePaths: ["index.html.jade", "index.jade"],
+		pretty: true,
+		locals: {}
 	};
 
-	options = Object.assign(defaults, options);
+	options = assign(defaults, options);
 
 	let indexPaths = [options.indexSrcPath]
-	.concat( options.ignoreCommonIndexPaths ? ["index.html.jade", "index.jade"] : [])
+	.concat(options.ignorePaths)
 	.map( filePath => path.join(APP_ROOT, src_dir, filePath) )
 	.join("|");
 
 	let escapedIndexPath = (indexPaths).replace(/([^\|\w\d\s])/g, (match) => "\\"+match);
 	let indexPattern = new RegExp( escapedIndexPath + "$");
 
-		// get jade templates from src
+	// get jade templates from src
 	let jadeFiles = shell.find( path.join(APP_ROOT,src_dir) )
 		.filter( filename => filename.match(/\.jade$/) )
 		// ignore index, we'll convert this separately to insert other files into
 		.filter( filename => !filename.match(indexPattern) )
 
+	// convert each file to html markup
 	return Promise
-		// convert each file to html markup
-	.map(jadeFiles, jadeRenderFileAsync)
-	.reduce((result, html) => {
-		// create array of compiled html
-		result.push(html);
-		return result;
-	},[])
+	.map(jadeFiles, (filename) => {
+		// get options for compile, including locals
+		let localPath = filename.replace( path.join(APP_ROOT,src_dir)+"/",'');
+		let opts = assign({pretty: options.pretty}, options.locals[localPath]);
+
+		// push Promise of compiled html
+		return jadeRenderFileAsync(filename, opts);
+	})
 
 	.then( htmlArray => {
-
 		let indexPath = path.join(APP_ROOT, src_dir, options.indexSrcPath);
 		let renderIndex;
 		if(options.compileIndex){
 			// compile index.jade to html
-			renderIndex = jadeRenderFileAsync(indexPath);
+			renderIndex = jadeRenderFileAsync(indexPath, {pretty: options.pretty});
 		}else{
 			// get html from file
 			renderIndex = fs.readFileAsync(indexPath,'utf-8');
