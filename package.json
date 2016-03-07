@@ -1,23 +1,28 @@
 {
-  "name": "@epferrari/jade-bundler",
-  "version": "1.0.0",
-  "description": "utility for compiling jade templates from source directory into index.html in destination directory",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "jade",
-    "development",
-    "utility"
-  ],
-  "author": "Ethan Ferrari <ethan@ethanferrari.com>",
-  "license": "MIT",
-  "dependencies": {
-    "app-root-path": "^1.0.0",
-    "bluebird": "^3.3.3",
-    "jade": "^1.11.0",
-    "object-assign": "^4.0.1",
-    "shelljs": "^0.6.0"
-  }
+	"name": "@epferrari/jade-bundler",
+	"version": "1.0.0",
+	"description": "utility for compiling jade templates from source directory into index.html in destination directory",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"readme": "jsdoc2md index.js --param-list-format table > README.md"
+	},
+	"keywords": [
+		"jade",
+		"development",
+		"utility"
+	],
+	"author": "Ethan Ferrari <ethan@ethanferrari.com>",
+	"license": "MIT",
+	"dependencies": {
+		"app-root-path": "^1.0.0",
+		"bluebird": "^3.3.3",
+		"jade": "^1.11.0",
+		"object-assign": "^4.0.1",
+		"shelljs": "^0.6.0"
+	},
+	"devDependencies": {
+		"dmd": "^1.3.10",
+		"jsdoc-to-markdown": "^1.3.3"
+	}
 }

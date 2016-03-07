@@ -17,32 +17,39 @@ const jadeRenderFileAsync = (filename,options) => {
 	});
 };
 
-module.exports = compileJade;
+module.exports = bundleJade;
 /**
 * Utitlity to compile all source jade templates and inject them into index.html in destination directory
 * @param {string} src_dir - the source directory to search for jade template files
 * @param {string} dest_dir - the destination directory to save index.html after compiling
 * @param {object} options
 * @param {boolean} [options.compileIndex=true] -
-		expect to compile jade index file as well as templates
-* @param {string} [options.indexSrcPath="index.html.jade"] -
-		the name of the index file to inject rendered template bundle into. If
-		`options.compileIndex=true` this file will be compiled before the
-		templates are injected. Filepath should be **relative to `src_dir`**. The
-		file itself should contain a comment `<!-- :jade templates: -->`  to indicate
-		where to inject the template files.
+*		expect to compile jade index file as well as templates
+* @param {string} [options.indexSrcPath= index.html.jade ] -
+*		the name of the index file to inject rendered template bundle into. If
+*		`options.compileIndex=true` this file will be compiled before the
+*		templates are injected.
+*		<br/><br/>
+*		The file itself should contain a comment `<!-- :jade templates: -->`
+*		<br/><br/>
+*		**Note:** indexSrcPath should be relative to `src_dir`
+*		to indicate where to inject the template files.
 * @param {array} [options.ignorePaths=Array["index.html.jade", "index.jade"]] -
-		ignore these paths when searching for template files in `src_dir`. Paths
-		are relative to `src_dir`
+*		ignore these paths when searching for template files in `src_dir`.
+*		<br/><br/>
+*		**Note:** Paths are relative to `src_dir`
 * @param {boolean} [options.pretty=true] - whether to prettify the jade rendered output
 * @param {object} [options.locals] - data to inject into the templates at compile time
-		keys are the filenames relative to `src_dir`, values are an object of key:value pairs.
-		ex. To inject locals into `<src_dir>/templates/my-template.html.jade', use
-		`locals: {"templates/my-template.html.jade":{greeting: "Hello World"}}` and refer
-		to it in the template as `greeting`
+*		keys are the filenames relative to `src_dir`, values are an object of key:value pairs.
+*		<br/><br/>
+*		**Example**
+*		<br/><br/>
+*		To inject locals into `<src_dir>/templates/my-template.html.jade'`<br/>
+*		use `locals: {"templates/my-template.html.jade":{greeting: "Hello World"}}`<br/>
+*		and refer to it in the template as `greeting`
 * @returns {Promise}
 */
-function compileJade(src_dir, dest_dir, options){
+function bundleJade(src_dir, dest_dir, options){
 
 	let defaults = {
 		compileIndex: true,
